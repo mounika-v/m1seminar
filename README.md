@@ -2,7 +2,9 @@
 Implemententation of seminar.
 
 add libigl to the directory
+
 copy main.cpp into sem directory
+
 How to execute is in commands.txt. Exact commands that are to used are 
 
 ```bash
