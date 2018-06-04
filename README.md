@@ -5,6 +5,7 @@ add libigl to the directory
 copy main.cpp into sem directory
 How to execute is in commands.txt. Exact commands that are to used are 
 
+```bash
 g++ -o trace2 cimgdemo.cpp -lX11 -lpthread 
 ./trace2
 cd triangle
@@ -19,3 +20,4 @@ cd ..
 cd sem/build
 make
 ./example_bin
+```
