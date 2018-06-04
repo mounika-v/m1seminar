@@ -15,7 +15,7 @@ void finddirection(int idiff,int jdiff,int &dir);
 int main()
 {
 	CImg<unsigned char> src("640400.png");
-	
+
 	int done,dir;
 	vector <int> contouri,contourj;
 
@@ -23,22 +23,23 @@ int main()
 	int height = src.height();
 	int bc = 0,c,r;
 	bool breakflag = false;
-	
+
 	cout << width << "x" << height << endl;
 	cout << src.depth() << " , " << src.spectrum()<<endl;
+
 	src.channel(0);
 	for (r = height-1 ; r>=0 ; r--)
 	{
 		for (c = 0; c < width; c++)
-			if((int)src(c,r,0,0) == 0 )//&& (int)src(c,r,0,1) == 0 && (int)src(c,r,0,2) == 0)
+			if((int)src(c,r,0,0) < 250 )//&& (int)src(c,r,0,1) == 0 && (int)src(c,r,0,2) == 0)
 			{
 				breakflag = true;break;
 			}
 		if(breakflag)
 			break;
 	}
-	cout<<c<<" "<<r<<endl;
-	cout<<"black pixel count: "<<bc<<endl;
+	//cout<<c<<" "<<r<<endl;
+	//cout<<"black pixel count: "<<bc<<endl;
 
 	/*---------------------------------- moores contour --------------------------------*/
 	dir=2;
@@ -46,7 +47,7 @@ int main()
 	int initi=r,initj=c;
 	vector<int> ni,nj;
 	int idiff, jdiff,currc,currr;
-	
+
 	while(done>0)
 	{
 		if(!entryexists(initi,initj,contouri,contourj)) //If the contour pixel doesn't exist in the vector, push it.
@@ -55,13 +56,13 @@ int main()
 			contourj.push_back(initj);
 		}
 		fillneighbor(dir,initi,initj,ni,nj); //Fill the neighbourhood vector in clockwise direction
-		
+
 		vector <int> :: iterator iiter,jiter;
 		for(iiter = ni.begin(),jiter = nj.begin(); iiter != ni.end() ; iiter++,jiter++) //iterate through neighbourhood points
 		{
 			//cout<<*iiter<<" "<<*jiter<<endl;
 			currc = *jiter; currr = *iiter;
-			if((int)src(currc,currr,0,0) == 0) // && (int)src(currc,currr,0,1) == 0 && (int)src(currc,currr,0,2) == 0)
+			if((int)src(currc,currr,0,0) < 250) // && (int)src(currc,currr,0,1) == 0 && (int)src(currc,currr,0,2) == 0)
 			{
 				//cout<<"met a black pixel"<<endl;
 				initi = *iiter; initj = *jiter;
@@ -77,9 +78,9 @@ int main()
 		finddirection(idiff,jdiff,dir);
 	}
 	cout<<"Contour size: "<<contouri.size()<<endl;
-	
+
 	/*------------------------------ Making the .poly file ---------------------------------*/
-	
+
 	vector <int> :: iterator ciiter,cjiter;
 	ofstream outdata;
 	outdata.open("triangle/contour.poly");
@@ -87,13 +88,13 @@ int main()
 	{
 		cout<<"Error opening file"<<endl;return 0;
 	}
-	
+
 	int csize = contouri.size();
 	if(csize % 5 == 0 || (csize -1)%5 == 0)
 		csize = (csize/5) + 1;
 	else
 		csize = (csize/5) + 2;
-	
+
 	//Start writing the file
 	outdata<<csize<<" "<<2<<endl;
 	int count=1,entryno=1;
@@ -114,20 +115,20 @@ int main()
 	}
 	outdata<<0<<endl;
 	outdata.close();
-	
+
 	//Silhouette image
 
-	CImg<unsigned char> silho(width,height,1,1,0);
-	const unsigned char black[1] = {0},white[3]={255,255,255};
-	silho.draw_fill(0,0,white);
-	for(ciiter = contouri.begin(),cjiter=contourj.begin();(ciiter+1)!=contouri.end();ciiter++,cjiter++)
-	{
-		cout<<*cjiter<<","<<*ciiter<<","<<*(cjiter+1)<<","<<*(ciiter+1)<<endl;
-		silho.draw_line(*cjiter,*ciiter,*(cjiter+1),*(ciiter+1),black);
-	}
-	
-	silho.draw_fill(c+1,r+1,black);
-	silho.save("silho.png");
+	// CImg<unsigned char> silho(width,height,1,1,0);
+	// const unsigned char black[1] = {0},white[3]={255,255,255};
+	// silho.draw_fill(0,0,white);
+	// for(ciiter = contouri.begin(),cjiter=contourj.begin();(ciiter+1)!=contouri.end();ciiter++,cjiter++)
+	// {
+	// 	cout<<*cjiter<<","<<*ciiter<<","<<*(cjiter+1)<<","<<*(ciiter+1)<<endl;
+	// 	silho.draw_line(*cjiter,*ciiter,*(cjiter+1),*(ciiter+1),black);
+	// }
+	//
+	// silho.draw_fill(c+1,r+1,black);
+	// silho.save("silho.png");
 
 	return 0;
 }
